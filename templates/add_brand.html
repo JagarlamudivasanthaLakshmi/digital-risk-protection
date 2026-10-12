@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit brand{% else %}Add brand{% endif %}{% endblock %}
+{% block content %}
+<section class="form-card wide-form"><p class="eyebrow">PROTECTED ASSET</p><h1>{% if editing %}Edit {{ object.name }}{% else %}Add a brand{% endif %}</h1><p class="muted">Register legitimate accounts and applications here to keep them excluded from impersonation findings.</p>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button class="button" type="submit">{% if editing %}Save changes{% else %}Create brand profile{% endif %}</button></form>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Brand profiles{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">ASSETS</p><h1>Brand profiles</h1><p class="muted">Official domains help distinguish legitimate sources from lookalikes.</p></div><a class="button" href="{% url 'brand-create' %}">Add brand</a></div>
+<section class="card-grid">
+{% for brand in brands %}
+<article class="panel brand-card">
+{% if brand.logo %}<img class="brand-logo" src="{{ brand.logo.url }}" alt="{{ brand.name }} logo">{% endif %}
+<p class="eyebrow">PROTECTED BRAND</p>
+<h2>{{ brand.name }}</h2>
+<p>{{ brand.description|default:"No description provided." }}</p>
+<h3>Official domains</h3>
+<p class="domain-list">{% for domain in brand.official_domains %}<span>{{ domain }}</span>{% empty %}<span>None configured</span>{% endfor %}</p>
+<h3>Official social accounts</h3>
+<ul>{% for account in brand.official_social_accounts %}<li><a href="{{ account }}" rel="noopener noreferrer">{{ account }}</a></li>{% empty %}<li>None configured</li>{% endfor %}</ul>
+<h3>Official apps / publishers</h3>
+<p>{% for app in brand.official_apps %}<span class="domain-list">{{ app }}</span> {% empty %}No app identifiers{% endfor %}</p>
+<div class="brand-actions">
+<a class="button button-small" href="{% url 'brand-edit' brand.pk %}">Edit assets</a>
+<form method="post" action="{% url 'monitoring-scan' %}">{% csrf_token %}<input type="hidden" name="brand" value="{{ brand.pk }}"><input type="hidden" name="source" value="social"><button class="button button-small" type="submit">Scan social</button></form>
+<form method="post" action="{% url 'monitoring-scan' %}">{% csrf_token %}<input type="hidden" name="brand" value="{{ brand.pk }}"><input type="hidden" name="source" value="google_play"><button class="button button-small" type="submit">Scan Google Play</button></form>
+</div>
+<small>Added {{ brand.created_at|date:"M j, Y" }}</small>
+</article>
+{% empty %}
+<div class="panel empty-state">No brands yet. Add your first brand profile to get started.</div>
+{% endfor %}
+</section>
+{% endblock %}

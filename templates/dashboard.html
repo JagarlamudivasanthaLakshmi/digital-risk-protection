@@ -1,0 +1,103 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1c32">
+  <title>Dashboard | RiskGuard</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dashboard-body">
+  <div class="dashboard-shell">
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="{% url 'dashboard' %}">
+        <span class="brand-shield" aria-hidden="true">◆</span>
+        <span><strong>RiskGuard</strong><small>Digital Risk Protection</small></span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="{% url 'dashboard' %}"><span class="nav-icon">⌂</span>Dashboard</a>
+        <a class="nav-link" href="{% url 'brand-list' %}"><span class="nav-icon">⬡</span>Brands</a>
+        <a class="nav-link" href="{% url 'social-monitoring' %}"><span class="nav-icon">◉</span>Social Monitoring</a>
+        <a class="nav-link" href="{% url 'app-monitoring' %}"><span class="nav-icon">▣</span>App Store Monitoring</a>
+        <a class="nav-link" href="{% url 'risk-analysis' %}"><span class="nav-icon">♟</span>Detections</a>
+        <a class="nav-link" href="{% url 'social-monitoring' %}"><span class="nav-icon">⌕</span>Live Scanning</a>
+        <a class="nav-link" href="{% url 'reports' %}"><span class="nav-icon">▤</span>Reports</a>
+        <a class="nav-link" href="{% url 'settings' %}"><span class="nav-icon">⚙</span>Settings</a>
+      </nav>
+      <a class="live-card" href="{% url 'social-monitoring' %}">
+        <strong><i></i> Live Monitoring</strong>
+        {% if last_scan_at %}<small>Last seen: {{ last_scan_at|timesince }} ago</small>{% else %}<small>Start a scan to begin</small>{% endif %}
+      </a>
+    </aside>
+
+    <div class="dashboard-content">
+      <header class="topbar">
+        <form class="global-search" role="search" action="{% url 'dashboard' %}" method="get">
+          <span aria-hidden="true">⌕</span>
+          <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search brands, profiles, apps..." aria-label="Search dashboard">
+        </form>
+        <a class="notification-link" href="{% url 'alert-list' %}" aria-label="{{ open_alert_count }} open alerts">♧{% if open_alert_count %}<span>{{ open_alert_count }}</span>{% endif %}</a>
+        <div class="user-menu"><span class="avatar">{{ user.username|first|upper }}</span><span>{{ user.get_full_name|default:user.username }}<small>{{ user.get_role_display|default:"Admin" }}</small></span><span class="menu-chevron">⌄</span></div>
+      </header>
+
+      <main class="dashboard-main">
+        {% if search_query %}
+          <section class="search-results" aria-live="polite">
+            <div class="section-heading"><h2>Search results for “{{ search_query }}”</h2><a href="{% url 'dashboard' %}">Clear</a></div>
+            {% for result in search_results %}<a class="search-result" href="{{ result.url }}"><span>{{ result.kind }}</span><strong>{{ result.title }}</strong><small>{{ result.description }}</small></a>{% empty %}<p>No matching brands or monitored items were found.</p>{% endfor %}
+          </section>
+        {% endif %}
+
+        <section class="page-intro"><h1>Welcome back, {{ user.get_full_name|default:user.username }}</h1><p>Here's what's happening with your brand protection.</p></section>
+
+        <section class="kpi-grid" aria-label="Detection summary">
+          <article class="kpi-card"><span class="kpi-icon red">♧</span><div><h2>Total Detections</h2><strong>{{ detection_count }}</strong><small><b class="neutral-change">●</b> All recorded findings</small></div></article>
+          <article class="kpi-card"><span class="kpi-icon blue">♙</span><div><h2>Social Media Threats</h2><strong>{{ social_detection_count }}</strong><small><b class="green-change">↗</b> Across monitored platforms</small></div></article>
+          <article class="kpi-card"><span class="kpi-icon purple">▣</span><div><h2>App Store Threats</h2><strong>{{ app_detection_count }}</strong><small><b class="green-change">↗</b> Apple and Google Play</small></div></article>
+          <article class="kpi-card"><span class="kpi-icon green">✓</span><div><h2>Monitored Brands</h2><strong>{{ brand_count }}</strong><small><b class="green-change">●</b> Protected workspaces</small></div></article>
+        </section>
+
+        <section class="chart-grid">
+          <article class="panel trend-panel">
+            <div class="panel-heading"><h2>Risk Trends (Last 7 Days)</h2><div class="chart-legend"><span><i class="legend-social"></i>Social</span><span><i class="legend-apps"></i>Apps</span></div></div>
+            <svg class="trend-chart" viewBox="0 0 620 190" role="img" aria-label="Social and app findings over the last seven days">
+              <path class="grid-line" d="M35 20H610M35 57H610M35 94H610M35 130H610"/><path class="chart-axis" d="M35 20V130H610"/>
+              <text x="5" y="24">{{ trend_top_label }}</text><text x="5" y="61">{{ trend_mid_label }}</text><text x="14" y="134">0</text>
+              <polyline class="social-line" points="{{ trend_social_points }}"/><polyline class="apps-line" points="{{ trend_app_points }}"/>
+              {% for point in trend %}<circle class="social-dot" cx="{{ point.x }}" cy="{{ point.social_y }}" r="3"/><circle class="apps-dot" cx="{{ point.x }}" cy="{{ point.apps_y }}" r="3"/><text class="date-label" x="{{ point.x }}" y="157">{{ point.label }}</text>{% endfor %}
+            </svg>
+          </article>
+          <article class="panel distribution-panel">
+            <div class="panel-heading"><h2>Risk Level Distribution</h2></div>
+            <div class="distribution-layout">
+              <div class="donut-chart" style="--donut: {{ pie_style }}"><div><strong>{{ detection_count }}</strong><span>total detections</span></div></div>
+              <ul class="severity-legend">{% for item in severity_data %}<li><i style="--severity-color:{{ item.color }}"></i><strong>{{ item.name }}</strong><span>{{ item.count }} ({{ item.percentage }}%)</span></li>{% endfor %}</ul>
+            </div>
+          </article>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="panel recent-panel">
+            <div class="panel-heading"><h2>Recent Detections</h2><a href="{% url 'risk-analysis' %}">View all <span aria-hidden="true">→</span></a></div>
+            <div class="table-scroll"><table class="recent-table"><thead><tr><th>#</th><th>Type</th><th>Name / URL</th><th>Brand</th><th>Risk Score</th><th>Status</th><th>Time</th></tr></thead><tbody>
+              {% for row in recent_findings %}{% with finding=row.finding %}<tr>
+                <td>{{ forloop.counter }}</td><td><span class="type-icon {{ row.source_group }}">{% if row.source_group == "social" %}♙{% else %}▣{% endif %}</span>{{ row.source_label }}</td>
+                <td><a class="finding-name" href="{{ row.url }}">{{ finding.monitored_item.name|default:finding.brand.name }}</a><small>{{ finding.monitored_item.url|default:finding.brand.name }}</small></td>
+                <td>{{ finding.brand.name }}</td><td><span class="score-pill {{ finding.severity }}">{{ finding.risk_score }}</span></td>
+                <td><span class="status-pill {{ row.status }}">{{ row.status|title }}</span></td><td title="{{ finding.created_at|date:'M j, Y H:i' }}">{{ finding.created_at|timesince }} ago</td>
+              </tr>{% endwith %}{% empty %}<tr><td colspan="7" class="empty-row">No detections yet. Start a social or app-store scan to populate this dashboard.</td></tr>{% endfor %}
+            </tbody></table></div>
+          </article>
+          <article class="panel threats-panel">
+            <div class="panel-heading"><h2>Top Threats</h2></div>
+            <ul class="threat-list">{% for threat in top_threats %}<li><span class="threat-mark">{{ threat.initial }}</span><span class="threat-copy"><strong>{{ threat.name }}</strong><small>{{ threat.count }} detection{{ threat.count|pluralize }}</small></span><span class="score-pill {{ threat.severity }}">{{ threat.severity|title }}</span></li>{% empty %}<li class="threat-empty">Threats will appear after the first scan.</li>{% endfor %}</ul>
+          </article>
+        </section>
+        <footer class="dashboard-footer"><strong>RiskGuard</strong><span>Digital Risk Protection Platform</span><span>Dashboard refreshes every 60 seconds · Source scans run on demand or schedule</span></footer>
+      </main>
+    </div>
+  </div>
+  <script>window.setTimeout(() => { if (!document.querySelector('.global-search input:focus')) window.location.reload(); }, 60000);</script>
+</body>
+</html>

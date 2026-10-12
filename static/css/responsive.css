@@ -1,0 +1,19 @@
+@media (max-width: 850px) {
+  .topbar { flex-wrap: wrap; gap: 12px 20px; padding-top: 14px; padding-bottom: 14px; }
+  .topbar nav { order: 3; width: 100%; flex: auto; overflow-x: auto; gap: 17px; }
+  .topbar nav a { white-space: nowrap; }
+  .account-nav { margin-left: auto; }
+  .hero { grid-template-columns: 1fr; gap: 30px; padding-inline: 0; }
+  .hero-card { max-width: 500px; }
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .page { width: 90vw; padding-top: 34px; }
+  .feature-grid, .card-grid { grid-template-columns: 1fr; }
+  .monitoring-tools { grid-template-columns: 1fr; }
+  .stats-grid { gap: 10px; }
+  .stat-card { min-height: 130px; padding: 16px; }
+  .page-heading { align-items: flex-start; flex-direction: column; }
+  .footer { flex-direction: column; gap: 5px; }
+  .form-card { padding: 24px; }
+}

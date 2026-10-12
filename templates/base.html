@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Digital Risk Protection{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand-mark" href="{% url 'home' %}">Shield<span>Watch</span></a>
+    <nav aria-label="Main navigation">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'brand-list' %}">Brands</a>
+      <a href="{% url 'social-monitoring' %}">Monitoring</a>
+      <a href="{% url 'alert-list' %}">Alerts</a>
+      <a href="{% url 'threat-graph' %}">Threat graph</a>
+      <a href="{% url 'reports' %}">Reports</a>
+    </nav>
+    <div class="account-nav">
+      {% if user.is_authenticated %}
+        <span>{{ user.username }}</span>
+        <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="link-button">Log out</button></form>
+      {% else %}
+        <a href="{% url 'login' %}">Log in</a><a class="button button-small" href="{% url 'register' %}">Create account</a>
+      {% endif %}
+    </div>
+  </header>
+  <main class="page">
+    {% if messages %}<div class="messages">{% for message in messages %}<p class="{{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">Digital Risk Protection <span>Monitor responsibly. Verify before acting.</span></footer>
+  <script src="{% static 'js/main.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Threat graph{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">CORRELATION</p><h1>Threat graph</h1><p class="muted">Relationships between protected brands and their monitored items.</p></div></div>
+<section class="panel"><h2>Connected entities</h2>{% if graph.nodes %}<ul class="graph-list">{% for node in graph.nodes %}<li><span class="badge">{{ node.kind|title }}</span> {{ node.label }}</li>{% endfor %}</ul><p class="muted">{{ graph.edges|length }} relationship{{ graph.edges|length|pluralize }} · JSON is also available from <code>/correlation/api/</code>.</p>{% else %}<p class="empty-state">No correlated findings yet. Scan an item to populate the graph.</p>{% endif %}</section>
+{% endblock %}

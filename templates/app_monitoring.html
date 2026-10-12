@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}App marketplace monitoring{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">APP DISCOVERY</p><h1>App marketplace monitoring</h1><p class="muted">Find apps resembling your brands in Apple App Store and Google Play, then compare publishers, listing details, and identifiers.</p></div>
+  <a class="button" href="{% url 'social-monitoring' %}">Social monitoring →</a>
+</div>
+<div class="monitoring-disclosure">Apple searches use its public App Store Search API. Google Play searches use a community scraper because Google does not provide a free public catalog-search API; availability may vary with page changes or rate limits. Results are candidate matches, not proof of impersonation. Official app IDs and URLs on your brand profile are excluded. Only the top three high-risk matches per scan receive AI analysis.</div>
+<section class="monitoring-tools">
+  <article class="panel"><p class="eyebrow">AUTOMATED DISCOVERY</p><h2>Search app stores</h2><form method="post" action="{% url 'monitoring-scan' %}">{% csrf_token %}<label for="{{ scan_form.source.id_for_label }}">App store</label>{{ scan_form.source }}<label for="{{ scan_form.brand.id_for_label }}">Brand profile</label>{{ scan_form.brand }}<button class="button" type="submit">Search selected store</button></form><small>Apple storefront: {{ APPLE_APP_STORE_COUNTRY|upper }} · Google Play storefront: {{ GOOGLE_PLAY_COUNTRY|upper }} ({{ GOOGLE_PLAY_LANGUAGE }})</small></article>
+  <article class="panel"><p class="eyebrow">MANUAL ENTRY</p><h2>Add an app listing</h2><form method="post" action="{% url 'monitoring-item-create' %}">{{ item_form.as_p }}<button class="button" type="submit">Add and score app</button></form></article>
+</section>
+<section class="panel monitoring-results">
+  <div class="section-heading"><div><p class="eyebrow">DISCOVERED CANDIDATES</p><h2>Tracked applications</h2></div><input class="table-filter" type="search" data-monitoring-filter placeholder="Filter apps…" aria-label="Filter apps"></div>
+  <div class="table-wrap"><table><thead><tr><th>Application</th><th>Store</th><th>Brand</th><th>Publisher</th><th>Risk</th><th>AI analysis / evidence</th><th>Last seen</th><th>Action</th></tr></thead><tbody>
+    {% for item in items %}{% with finding=item.findings.all|first %}
+    <tr data-monitoring-row><td><strong>{{ item.name }}</strong><br>{% if item.url %}<a href="{{ item.url }}" target="_blank" rel="nofollow noopener noreferrer">Open store listing</a>{% endif %}<br><small>Package: {{ item.metadata.bundle_id|default:"not provided" }}</small></td><td>{{ item.get_source_display }}</td><td>{{ item.brand.name }}</td><td>{{ item.publisher|default:"Unknown" }}</td>
+    <td>{% if finding %}<span class="badge {{ finding.severity }}">{{ finding.get_severity_display }} · {{ finding.risk_score }}</span>{% else %}<span class="badge">Not scanned</span>{% endif %}</td>
+    <td>{% if finding.ai_status == "completed" %}<strong>AI:</strong> {{ finding.ai_summary|truncatechars:150 }}{% elif finding %}{{ finding.explanation|default:finding.ai_error|truncatechars:150 }}{% else %}Awaiting scan{% endif %}</td><td>{{ item.last_seen_at|date:"M j, Y H:i" }}</td>
+    <td><button class="button button-small" type="button" data-analyze-item="{{ item.pk }}" data-analyze-url="{% url 'risk-finding-list' %}scan/">Scan / AI explain</button></td></tr>
+    {% endwith %}{% empty %}<tr><td colspan="8" class="empty-state">No apps tracked yet. Select a brand and store to search, or add a listing manually.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/monitoring.js' %}" defer></script>{% endblock %}

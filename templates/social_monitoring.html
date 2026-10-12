@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Social monitoring{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">SOCIAL DISCOVERY</p><h1>Social media monitoring</h1><p class="muted">Search public Bluesky profiles and configured public Mastodon servers. Instagram, Facebook, X, LinkedIn, YouTube, and TikTok profiles can be added manually.</p></div>
+  <a class="button" href="{% url 'app-monitoring' %}">App marketplace monitoring →</a>
+</div>
+<div class="monitoring-disclosure">Automated search currently covers public Bluesky and Mastodon profile endpoints. The other listed platforms do not have configured API access in this prototype, so add known public profiles manually; they will be scored but are not automatically discovered. Results are candidate matches, not proof of impersonation. Only the top three high-risk matches per automated scan receive AI analysis.</div>
+<section class="monitoring-tools">
+  <article class="panel"><p class="eyebrow">AUTOMATED DISCOVERY</p><h2>Scan social platforms</h2><form method="post" action="{% url 'monitoring-scan' %}">{% csrf_token %}{{ scan_form.source }}<label for="{{ scan_form.brand.id_for_label }}">Brand profile</label>{{ scan_form.brand }}<button class="button" type="submit">Search Bluesky &amp; Mastodon</button></form><small>Mastodon instances: {{ MASTODON_INSTANCES|join:", "|default:"mastodon.social" }}</small></article>
+  <article class="panel"><p class="eyebrow">MANUAL ENTRY</p><h2>Add a profile or page</h2><form method="post" action="{% url 'monitoring-item-create' %}">{% csrf_token %}{{ item_form.as_p }}<button class="button" type="submit">Add and score profile</button></form></article>
+</section>
+<section class="panel monitoring-results">
+  <div class="section-heading"><div><p class="eyebrow">DISCOVERED CANDIDATES</p><h2>Tracked social profiles</h2></div><input class="table-filter" type="search" data-monitoring-filter placeholder="Filter profiles…" aria-label="Filter profiles"></div>
+  <div class="table-wrap"><table><thead><tr><th>Profile</th><th>Brand</th><th>Platform</th><th>Risk</th><th>Evidence / AI</th><th>Last seen</th><th>Action</th></tr></thead><tbody>
+    {% for item in items %}{% with finding=item.findings.all|first %}
+    <tr data-monitoring-row><td><strong>{{ item.name }}</strong><br>{% if item.url %}<a href="{{ item.url }}" target="_blank" rel="nofollow noopener noreferrer">{{ item.url }}</a>{% endif %}</td><td>{{ item.brand.name }}</td><td>{{ item.metadata.provider|default:item.get_source_display|title }}</td>
+    <td>{% if finding %}<span class="badge {{ finding.severity }}">{{ finding.get_severity_display }} · {{ finding.risk_score }}</span>{% else %}<span class="badge">Not scanned</span>{% endif %}</td>
+    <td>{% if finding.ai_status == "completed" %}<strong>AI:</strong> {{ finding.ai_summary|truncatechars:150 }}{% elif finding %}{{ finding.explanation|default:finding.ai_error|truncatechars:150 }}{% else %}Awaiting scan{% endif %}</td><td>{{ item.last_seen_at|date:"M j, Y H:i" }}</td>
+    <td><button class="button button-small" type="button" data-analyze-item="{{ item.pk }}" data-analyze-url="{% url 'risk-finding-list' %}scan/">Scan / AI explain</button></td></tr>
+    {% endwith %}{% empty %}<tr><td colspan="7" class="empty-state">No social profiles yet. Choose a brand and scan Bluesky/Mastodon, or add a profile from another platform manually.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/monitoring.js' %}" defer></script>{% endblock %}

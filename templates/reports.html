@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}<div class="page-heading"><div><p class="eyebrow">REPORTING</p><h1>Reports</h1><p class="muted">Export your account-scoped risk findings for offline review.</p></div></div><section class="panel report-card"><h2>Risk findings export</h2><p>Download a CSV containing finding scores, severity, time, and explanation.</p><a class="button" href="{% url 'findings-csv' %}">Download CSV</a></section>{% endblock %}

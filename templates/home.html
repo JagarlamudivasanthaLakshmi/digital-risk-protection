@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Digital Risk Protection{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">BRAND SAFETY WORKSPACE</p>
+    <h1>See digital threats.<br><span>Respond with confidence.</span></h1>
+    <p class="lead">Keep your brand profiles, monitored listings, risk signals, and investigations together in one workspace.</p>
+    {% if user.is_authenticated %}<a class="button" href="{% url 'dashboard' %}">Open dashboard</a>
+    {% else %}<a class="button" href="{% url 'register' %}">Get started</a><a class="text-link" href="{% url 'login' %}">Already registered? Log in</a>{% endif %}
+  </div>
+  <div class="hero-card"><div class="shield-icon">◆</div><p class="eyebrow">PROTECTION OVERVIEW</p><h2>Your team, one signal view.</h2><p>Correlate suspicious names, URLs, content, and publishers with the brands you protect.</p><div class="signal-line"><span></span><span></span><span></span><span></span><span></span></div></div>
+</section>
+<section class="feature-grid">
+  <article class="panel"><h3>Brand profiles</h3><p>Keep official domains and brand assets organized.</p></article>
+  <article class="panel"><h3>Risk signals</h3><p>Review explainable findings rather than opaque scores.</p></article>
+  <article class="panel"><h3>Investigations</h3><p>Track alert status and export findings for your team.</p></article>
+</section>
+{% endblock %}

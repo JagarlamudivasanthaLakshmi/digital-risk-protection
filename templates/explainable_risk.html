@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Risk analysis{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">DETECTION</p><h1>Explainable risk analysis</h1><p class="muted">Scores include their contributing signals and weights.</p></div></div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Item</th><th>Brand</th><th>Score</th><th>Severity</th><th>Rule-based signals</th><th>AI analysis</th></tr></thead><tbody>{% for finding in findings %}<tr><td>{{ finding.monitored_item.name|default:"—" }}</td><td>{{ finding.brand.name }}</td><td>{{ finding.risk_score }}/100</td><td><span class="badge {{ finding.severity }}">{{ finding.get_severity_display }}</span></td><td>{{ finding.explanation }}</td><td>{% if finding.ai_status == "completed" %}{{ finding.ai_summary }}<br><strong>Next step:</strong> {{ finding.ai_recommendation }}{% elif finding.ai_status == "failed" %}Unavailable: {{ finding.ai_error }}{% else %}{{ finding.ai_error }}{% endif %}</td></tr>{% empty %}<tr><td colspan="6" class="empty-state">No findings yet. Scan a monitored item via the API.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}
