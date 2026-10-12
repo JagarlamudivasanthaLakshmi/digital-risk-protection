@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1c32">
+    <title>RiskGuard | Digital Risk Protection</title>
+    <link rel="stylesheet" href="/src/site.css">
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="auth-intro">
+        <a class="brand" href="/">◆ RiskGuard</a>
+        <p class="eyebrow">DIGITAL RISK PROTECTION</p>
+        <h1>See digital threats.<br>Respond with confidence.</h1>
+        <p>Monitor public social profiles and mobile app listings for brand impersonation signals.</p>
+      </section>
+      <section class="auth-panel">
+        <h2>Sign in to your workspace</h2>
+        <p class="muted">Use your Netlify Identity account.</p>
+        <form id="login-form">
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+          <button type="submit">Sign in</button>
+        </form>
+        <details>
+          <summary>Create an account</summary>
+          <form id="signup-form">
+            <label>Email<input name="email" type="email" autocomplete="email" required></label>
+            <label>Password<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+            <button type="submit" class="secondary">Create account</button>
+          </form>
+        </details>
+        <p id="notice" class="notice" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script type="module" src="/src/auth.ts"></script>
+  </body>
+</html>

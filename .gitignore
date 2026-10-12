@@ -7,3 +7,6 @@ staticfiles/
 .venv/
 venv/
 .pytest_cache/
+node_modules/
+dist/
+.netlify/

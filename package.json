@@ -1,0 +1,30 @@
+{
+  "name": "digital-risk-protection-netlify",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "netlify dev",
+    "dev:web": "vite --host 127.0.0.1",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio",
+    "identity:enable": "node scripts/enable-identity.mjs",
+    "test": "node --disable-warning=ExperimentalWarning --experimental-strip-types --test tests-js/*.test.mjs"
+  },
+  "dependencies": {
+    "@netlify/database": "^2.0.1",
+    "@netlify/functions": "^6.0.2",
+    "@netlify/identity": "^2.0.0",
+    "drizzle-orm": "1.0.0-beta.22",
+    "google-play-scraper": "^10.1.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "1.0.0-beta.22",
+    "netlify-cli": "^27.12.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4"
+  }
+}

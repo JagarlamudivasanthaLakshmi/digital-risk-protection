@@ -81,3 +81,18 @@ All application pages and APIs require authentication except registration and pu
 ## Tests
 
 Run the suite with `python manage.py test`.
+
+## Netlify implementation (parallel deployment)
+
+The Netlify version lives alongside the Django application; it does not replace or migrate the Django database.
+
+1. Install Node.js 22 or newer and run `npm install`.
+2. Link a Netlify site with `npx netlify link`.
+3. In that site's **Identity** settings, enable Identity (or run `npm run identity:enable` to open the correct settings page).
+4. Enable Netlify Database for the site. Netlify applies SQL migrations in `netlify/database/migrations` during deploys.
+5. Run `npm run db:generate` after schema changes, `npm test`, and `npm run build`.
+6. Run the Netlify app locally with `npm run dev`, or deploy the repository to Netlify. The Netlify static app is built into `dist`; Django continues to run separately with `python manage.py runserver`.
+
+Identity enablement is a site-level action: the helper opens the selected site's settings but cannot enable a service in a Netlify account without the user completing that action in the dashboard. Set `NETLIFY_SITE_ID` or link the project before running it.
+
+The Netlify app currently supports brand registration, owner-scoped dashboards, manual findings/alerts, and public Bluesky, Mastodon, Apple App Store, and Google Play scans. It uses Netlify Identity for authentication and Netlify Database/Postgres for persistence. Review provider terms and deploy-time Identity/Database configuration before using production data.

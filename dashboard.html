@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1c32">
+    <title>Dashboard | RiskGuard</title>
+    <link rel="stylesheet" href="/src/site.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/dashboard.html">◆ RiskGuard</a>
+        <nav aria-label="Main navigation">
+          <a class="active" href="/dashboard.html">Dashboard</a>
+          <a href="#brands">Brand profiles</a>
+          <a href="#findings">Risk findings</a>
+          <a href="#alerts">Alerts</a>
+        </nav>
+        <p class="sidebar-note">Polling monitors public sources; results are candidate matches, not proof of abuse.</p>
+      </aside>
+      <main class="workspace">
+        <header class="toolbar">
+          <div><p class="eyebrow">BRAND SAFETY WORKSPACE</p><h1>Dashboard</h1></div>
+          <div class="user-actions"><span id="user-email"></span><button id="logout-button" class="secondary">Sign out</button></div>
+        </header>
+        <p id="notice" class="notice" role="status" aria-live="polite"></p>
+        <section id="metrics" class="metric-grid" aria-label="Detection summary"></section>
+        <section id="brands" class="panel">
+          <div class="section-heading"><div><p class="eyebrow">PROTECTED ASSETS</p><h2>Brand profiles</h2></div></div>
+          <form id="brand-form" class="brand-form">
+            <label>Brand name<input name="name" maxlength="160" required></label>
+            <label>Description<textarea name="description" rows="2"></textarea></label>
+            <label>Official domains <small>One per line</small><textarea name="officialDomains" rows="2"></textarea></label>
+            <label>Official publishers <small>One per line</small><textarea name="officialPublishers" rows="2"></textarea></label>
+            <label>Official social URLs <small>One per line</small><textarea name="officialSocialAccounts" rows="2"></textarea></label>
+            <label>Official app IDs / URLs <small>One per line</small><textarea name="officialApps" rows="2"></textarea></label>
+            <button type="submit">Add brand</button>
+          </form>
+          <div id="brand-list" class="brand-list"></div>
+        </section>
+        <section id="findings" class="panel">
+          <div class="section-heading"><div><p class="eyebrow">EXPLAINABLE SCORING</p><h2>Recent findings</h2></div></div>
+          <div id="finding-list" class="finding-list"></div>
+        </section>
+        <section id="alerts" class="panel">
+          <div class="section-heading"><div><p class="eyebrow">INVESTIGATIONS</p><h2>Alerts</h2></div></div>
+          <div id="alert-list" class="alert-list"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/dashboard.ts"></script>
+  </body>
+</html>
