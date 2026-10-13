@@ -32,3 +32,17 @@ class DashboardTests(TestCase):
         response = self.client.get("/dashboard/", {"q": "social.example.net"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Example Support")
+
+    def test_dashboard_renders_reference_sections_and_account_menu(self):
+        user = get_user_model().objects.create_user(username="dashboard-layout-user")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Risk Trends (Last 7 Days)")
+        self.assertContains(response, "Risk Level Distribution")
+        self.assertContains(response, "Recent Detections")
+        self.assertContains(response, "Top Threats")
+        self.assertContains(response, 'class="user-menu"')
+        self.assertContains(response, "Log out")

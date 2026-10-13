@@ -38,7 +38,10 @@
           <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search brands, profiles, apps..." aria-label="Search dashboard">
         </form>
         <a class="notification-link" href="{% url 'alert-list' %}" aria-label="{{ open_alert_count }} open alerts">♧{% if open_alert_count %}<span>{{ open_alert_count }}</span>{% endif %}</a>
-        <div class="user-menu"><span class="avatar">{{ user.username|first|upper }}</span><span>{{ user.get_full_name|default:user.username }}<small>{{ user.get_role_display|default:"Admin" }}</small></span><span class="menu-chevron">⌄</span></div>
+        <details class="user-menu">
+          <summary><span class="avatar">{{ user.username|first|upper }}</span><span>{{ user.get_full_name|default:user.username }}<small>{{ user.get_role_display|default:"Admin" }}</small></span><span class="menu-chevron">⌄</span></summary>
+          <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button type="submit">Log out</button></form>
+        </details>
       </header>
 
       <main class="dashboard-main">

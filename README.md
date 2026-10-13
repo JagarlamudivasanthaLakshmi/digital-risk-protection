@@ -87,11 +87,14 @@ Run the suite with `python manage.py test`.
 The Netlify version lives alongside the Django application; it does not replace or migrate the Django database.
 
 1. Install Node.js 22 or newer and run `npm install`.
-2. Link a Netlify site with `npx netlify link`.
-3. In that site's **Identity** settings, enable Identity (or run `npm run identity:enable` to open the correct settings page).
-4. Enable Netlify Database for the site. Netlify applies SQL migrations in `netlify/database/migrations` during deploys.
-5. Run `npm run db:generate` after schema changes, `npm test`, and `npm run build`.
-6. Run the Netlify app locally with `npm run dev`, or deploy the repository to Netlify. The Netlify static app is built into `dist`; Django continues to run separately with `python manage.py runserver`.
+2. Create/select a Netlify site and link it with `npx netlify link`.
+3. In that site's **Identity** settings, enable Identity and email/password sign-up. Configure email confirmation as desired.
+4. Enable **Netlify Database** for the same site and confirm the site's `NETLIFY_DB_URL` is available to its functions.
+5. Ensure the SQL migration in `netlify/database/migrations` is applied to that database. The schema is defined in `db/schema.ts`; regenerate it after schema changes with `npm run db:generate`.
+6. Set deployment environment variables for any non-default provider settings such as `MASTODON_INSTANCES`, `APPLE_APP_STORE_COUNTRY`, `GOOGLE_PLAY_COUNTRY`, and `GOOGLE_PLAY_LANGUAGE`.
+7. Run `npm test` and `npm run build`, then deploy the linked site with `npx netlify deploy --build` (use `--prod` for the production deploy).
+
+The deployed backend runs in `netlify/functions`: `/api/brands`, `/api/dashboard`, `/api/scan`, `/api/alerts`, and `/api/health`. All data functions require a Netlify Identity user and use the Netlify Database Postgres connection; rows are scoped to the signed-in owner. Check `/api/health` after deploy: it returns HTTP 200 only when the database is reachable and HTTP 503 with setup guidance otherwise. Database setup and Identity activation are site/account actions and cannot be completed by a source-code deploy alone.
 
 Identity enablement is a site-level action: the helper opens the selected site's settings but cannot enable a service in a Netlify account without the user completing that action in the dashboard. Set `NETLIFY_SITE_ID` or link the project before running it. When developing locally without a linked Identity site, the sign-in page links to the Django account pages on port 8002; start Django with `python manage.py runserver 8002` to use this fallback. In a deployed Netlify app, enable Identity for the site. If account confirmation is required, confirm by email before signing in.
 
