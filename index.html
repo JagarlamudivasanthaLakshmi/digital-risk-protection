@@ -17,7 +17,7 @@
       </section>
       <section class="auth-panel">
         <h2>Sign in to your workspace</h2>
-        <p class="muted">Use your Netlify Identity account.</p>
+        <p class="muted">Sign in to your workspace.</p>
         <form id="login-form">
           <label>Email<input name="email" type="email" autocomplete="email" required></label>
           <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
@@ -31,6 +31,11 @@
             <button type="submit" class="secondary">Create account</button>
           </form>
         </details>
+        <div id="local-auth-fallback" class="auth-fallback" hidden>
+          <p class="muted">Netlify Identity is not enabled for this local site. Use the Django account pages instead:</p>
+          <a id="django-login-link" class="auth-fallback-button">Sign in</a>
+          <a id="django-register-link" class="auth-fallback-button secondary">Create account</a>
+        </div>
         <p id="notice" class="notice" role="status" aria-live="polite"></p>
       </section>
     </main>

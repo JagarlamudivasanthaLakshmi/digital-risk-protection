@@ -29,3 +29,21 @@ class RegistrationTests(TestCase):
         self.assertEqual(user.email, "analyst@example.com")
         self.assertTrue(user.is_authenticated)
         self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+
+    def test_sign_in_authenticates_registered_user(self):
+        user = get_user_model().objects.create_user(
+            username="existing-analyst",
+            email="analyst@example.com",
+            password="R4ndom-Secure-Pass-2026!",
+        )
+
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "existing-analyst",
+                "password": "R4ndom-Secure-Pass-2026!",
+            },
+        )
+
+        self.assertRedirects(response, reverse("dashboard"))
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
