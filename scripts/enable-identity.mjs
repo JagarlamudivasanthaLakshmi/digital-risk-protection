@@ -5,11 +5,24 @@ import process from "node:process";
 
 const statePath = resolve(".netlify/state.json");
 let siteId = process.env.NETLIFY_SITE_ID;
+let siteName = process.env.NETLIFY_SITE_NAME;
+
+if (!siteName && process.env.NETLIFY_SITE_URL) {
+  try {
+    siteName = new URL(process.env.NETLIFY_SITE_URL).hostname.split(".")[0];
+  } catch {
+    console.error("NETLIFY_SITE_URL must be a valid URL, such as https://digital-risk-protection.netlify.app.");
+    process.exit(1);
+  }
+}
 
 if (!siteId && existsSync(statePath)) {
   const state = JSON.parse(readFileSync(statePath, "utf8"));
   siteId = state.siteId;
 }
+
+// The production domain can identify the project settings page without `netlify link`.
+siteId ||= siteName || "digital-risk-protection";
 
 if (!siteId || !/^[a-zA-Z0-9-]+$/.test(siteId)) {
   console.error(

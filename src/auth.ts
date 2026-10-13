@@ -13,6 +13,7 @@ const loginForm = document.querySelector<HTMLFormElement>("#login-form");
 const signupForm = document.querySelector<HTMLFormElement>("#signup-form");
 const signupDetails = signupForm?.closest("details");
 const fallback = document.querySelector<HTMLElement>("#local-auth-fallback");
+const identitySettingsLink = document.querySelector<HTMLAnchorElement>("#identity-settings-link");
 let identityReady = false;
 let signupEnabled = true;
 
@@ -50,6 +51,16 @@ function showLocalDjangoFallback(): void {
   showMessage("Using Django accounts on port 8002 for local sign-in.");
 }
 
+function showIdentitySettingsLink(): void {
+  if (!identitySettingsLink) return;
+  const siteName = window.location.hostname.endsWith(".netlify.app")
+    ? window.location.hostname.slice(0, -".netlify.app".length)
+    : "";
+  if (!siteName) return;
+  identitySettingsLink.href = `https://app.netlify.com/projects/${encodeURIComponent(siteName)}/identity`;
+  identitySettingsLink.hidden = false;
+}
+
 function showIdentityUnavailable(error: unknown): boolean {
   const identityNotFound = error instanceof MissingIdentityError
     || (error instanceof AuthError && error.status === 404)
@@ -63,6 +74,7 @@ function showIdentityUnavailable(error: unknown): boolean {
   } else {
     loginForm?.setAttribute("hidden", "");
     signupDetails?.setAttribute("hidden", "");
+    showIdentitySettingsLink();
     showMessage("Netlify Identity is unavailable. Enable Identity for this Netlify site, then try again.", true);
   }
   return true;
@@ -143,6 +155,7 @@ async function initializeAuthPage() {
       return;
     }
     setAuthControlsDisabled(true);
+    showIdentitySettingsLink();
     const detail = error instanceof Error ? error.message : "Unknown Identity error.";
     showMessage(
       `Could not connect to Netlify Identity (${detail}). Enable Identity and email/password sign-ups for this site, then reload.`,

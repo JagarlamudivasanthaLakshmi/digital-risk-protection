@@ -37,6 +37,8 @@ input:focus, textarea:focus { outline: 3px solid #d7e9ff; border-color: #3481de;
 details { border-top: 1px solid #e5eaf0; padding-top: 18px; }
 summary { cursor: pointer; color: #1266d6; font-weight: 650; }
 .notice { min-height: 20px; color: #9e2f29; font-size: 14px; }
+.identity-settings-link { display: inline-block; margin-top: 4px; color: #1266d6; font-size: 13px; font-weight: 650; }
+.identity-settings-link[hidden] { display: none; }
 .auth-fallback { display: grid; gap: 10px; margin-top: 18px; }
 .auth-fallback[hidden] { display: none; }
 .auth-fallback p { margin: 0; }
