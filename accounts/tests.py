@@ -7,6 +7,7 @@ class RegistrationTests(TestCase):
     def test_registration_page_is_available(self):
         response = self.client.get(reverse("register"))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Spaces and symbols are allowed")
 
     def test_login_page_uses_project_template(self):
         response = self.client.get(reverse("login"))
@@ -47,3 +48,46 @@ class RegistrationTests(TestCase):
 
         self.assertRedirects(response, reverse("dashboard"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+
+    def test_registration_accepts_custom_username_text(self):
+        username = "Analyst Name / 東京!"
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": username,
+                "email": "custom-name@example.com",
+                "password1": "R4ndom-Secure-Pass-2026!",
+                "password2": "R4ndom-Secure-Pass-2026!",
+            },
+        )
+
+        self.assertRedirects(response, reverse("dashboard"))
+        self.assertTrue(get_user_model().objects.filter(username=username).exists())
+        self.client.logout()
+        login_response = self.client.post(
+            reverse("login"),
+            {
+                "username": username,
+                "password": "R4ndom-Secure-Pass-2026!",
+            },
+        )
+        self.assertRedirects(login_response, reverse("dashboard"))
+
+    def test_registration_still_rejects_duplicate_usernames(self):
+        get_user_model().objects.create_user(
+            username="Existing Name!",
+            email="first@example.com",
+            password="R4ndom-Secure-Pass-2026!",
+        )
+
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "Existing Name!",
+                "email": "second@example.com",
+                "password1": "R4ndom-Secure-Pass-2026!",
+                "password2": "R4ndom-Secure-Pass-2026!",
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
